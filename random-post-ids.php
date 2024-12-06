@@ -23,13 +23,12 @@ add_filter( 'gu_override_dot_org', function( $overrides ) {
     return $overrides;
 }, 999 );
 
-// modify post insertion logic to assign random 7-digit ids for new posts
+// modify post insertion logic to assign random 7-digit ids for all post types
 add_filter( 'wp_insert_post_data', function( $data, $postarr ) {
     global $wpdb;
 
-    // only apply to new posts of type 'post'
-    // check that this is a truly new post (id must be empty or zero)
-    if ( $data['post_type'] === 'post' && empty( $postarr['ID'] ) ) {
+    // only apply to new posts (id must be empty or zero)
+    if ( empty( $postarr['ID'] ) ) {
 
         // generate a unique random 7-digit id
         do {
