@@ -23,23 +23,30 @@ add_filter( 'gu_override_dot_org', function( $overrides ) {
     return $overrides;
 }, 999 );
 
-add_filter('wp_insert_post_data', function ($data, $postarr) {
+// modify post insertion logic to assign random 7-digit ids for new posts
+add_filter( 'wp_insert_post_data', function( $data, $postarr ) {
     global $wpdb;
 
-    // Only apply to new posts of type 'post'
-    // Check that this is a truly new post (ID empty or zero in the incoming array)
-    if ($data['post_type'] === 'post' && empty($postarr['ID'])) {
-        // Generate a unique random 7-digit ID
-        do {
-            $random_id = mt_rand(1000000, 9999999);
-            $exists = $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE ID = %d", $random_id));
-        } while ($exists);
+    // only apply to new posts of type 'post'
+    // check that this is a truly new post (id must be empty or zero)
+    if ( $data['post_type'] === 'post' && empty( $postarr['ID'] ) ) {
 
-        // Set the custom ID right before insertion
+        // generate a unique random 7-digit id
+        do {
+            $random_id = mt_rand( 1000000, 9999999 ); // random id between 1,000,000 and 9,999,999
+            $exists    = $wpdb->get_var( 
+                $wpdb->prepare( 
+                    "SELECT ID FROM $wpdb->posts WHERE ID = %d", 
+                    $random_id 
+                ) 
+            ); // check if id already exists in wp_posts table
+        } while ( $exists ); // repeat until a unique id is found
+
+        // set the random id to the post data before insertion
         $data['ID'] = $random_id;
     }
 
     return $data;
-}, 10, 2);
+}, 10, 2 );
 
 // Ref: ChatGPT
