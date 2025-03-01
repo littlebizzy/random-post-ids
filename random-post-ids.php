@@ -27,25 +27,25 @@ add_filter( 'gu_override_dot_org', function( $overrides ) {
     return $overrides;
 }, 999 );
 
-// modify post insertion logic to assign random 7-digit ids for all post types.
+// modify post insertion logic to assign random 7-digit ids for all post types
 add_filter( 'wp_insert_post_data', function( $data, $postarr ) {
     global $wpdb;
 
-    // only apply to new posts (id must be empty or zero).
+    // only apply to new posts (id must be empty or zero)
     if ( empty( $postarr['ID'] ) ) {
 
-        // generate a unique random 7-digit id.
+        // generate a unique random 7-digit id
         do {
-            $random_id = mt_rand( 1000000, 9999999 ); // random id between 1,000,000 and 9,999,999.
+            $random_id = mt_rand( 1000000, 9999999 ); // random id between 1,000,000 and 9,999,999
             $exists = $wpdb->get_var(
                 $wpdb->prepare(
                     "SELECT 1 FROM $wpdb->posts WHERE ID = %d LIMIT 1",
                     $random_id
                 )
             );
-        } while ( $exists ); // repeat until a unique id is found.
+        } while ( $exists ); // repeat until a unique id is found
 
-        // set the random id to the post data before insertion.
+        // set the random id to the post data before insertion
         $data['ID'] = $random_id;
     }
 
